@@ -35,9 +35,11 @@ const Index = () => {
               Comprehensive task management with real-time collaboration, location tracking, and advanced analytics
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="accent" size="lg" className="text-lg">
-                Get Started
-              </Button>
+              <Link to="/auth">
+                <Button variant="accent" size="lg" className="text-lg">
+                  Get Started
+                </Button>
+              </Link>
               <Button variant="outline" size="lg" className="text-lg bg-white/10 text-white border-white/20 hover:bg-white/20">
                 View Demo
               </Button>
@@ -276,9 +278,11 @@ const Index = () => {
             Join thousands of teams already using TaskVision to streamline their operations
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="hero" size="lg" className="text-lg">
-              Start Free Trial
-            </Button>
+            <Link to="/auth">
+              <Button variant="hero" size="lg" className="text-lg">
+                Start Free Trial
+              </Button>
+            </Link>
             <Button variant="outline" size="lg" className="text-lg">
               Schedule Demo
             </Button>
