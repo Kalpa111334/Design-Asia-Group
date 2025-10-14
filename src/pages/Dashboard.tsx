@@ -1,11 +1,8 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { 
-  LogOut, 
   CheckCircle2, 
   Clock, 
   AlertCircle,
@@ -15,11 +12,11 @@ import {
   Package
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import Layout from '@/components/Layout';
 
 const Dashboard = () => {
-  const { user, signOut, loading, isAdmin } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<any>(null);
   const [stats, setStats] = useState({
     totalTasks: 0,
     completedTasks: 0,
@@ -35,49 +32,33 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-      fetchProfile();
       fetchTaskStats();
     }
   }, [user]);
 
-  const fetchProfile = async () => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user?.id)
-      .single();
-    
-    if (data) {
-      setProfile(data);
-    }
-  };
-
   const fetchTaskStats = async () => {
     if (!user) return;
 
-    // Fetch tasks assigned to user
     const { data: assignedTasks } = await supabase
       .from('task_assignees')
       .select('task_id')
       .eq('user_id', user.id);
 
-    if (assignedTasks) {
+    if (assignedTasks && assignedTasks.length > 0) {
       const taskIds = assignedTasks.map(t => t.task_id);
       
-      if (taskIds.length > 0) {
-        const { data: tasks } = await supabase
-          .from('tasks')
-          .select('*')
-          .in('id', taskIds);
+      const { data: tasks } = await supabase
+        .from('tasks')
+        .select('*')
+        .in('id', taskIds);
 
-        if (tasks) {
-          setStats({
-            totalTasks: tasks.length,
-            completedTasks: tasks.filter(t => t.status === 'completed').length,
-            pendingTasks: tasks.filter(t => t.status === 'pending').length,
-            urgentTasks: tasks.filter(t => t.priority === 'urgent').length,
-          });
-        }
+      if (tasks) {
+        setStats({
+          totalTasks: tasks.length,
+          completedTasks: tasks.filter(t => t.status === 'completed').length,
+          pendingTasks: tasks.filter(t => t.status === 'pending').length,
+          urgentTasks: tasks.filter(t => t.priority === 'urgent').length,
+        });
       }
     }
   };
@@ -93,38 +74,18 @@ const Dashboard = () => {
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      {/* Header */}
-      <header className="bg-card border-b shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">TaskVision</h1>
-              <p className="text-sm text-muted-foreground">Welcome back, {profile?.full_name || 'User'}</p>
-            </div>
-            <div className="flex items-center gap-4">
-              {isAdmin && (
-                <Badge variant="default" className="bg-primary">Admin</Badge>
-              )}
-              <Button variant="ghost" onClick={signOut}>
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </div>
-          </div>
+    <Layout>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">Overview of your tasks and activities</p>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="hover:shadow-lg transition-all border-l-4 border-l-primary">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="border-l-4 border-l-primary">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Total Tasks</CardTitle>
             </CardHeader>
@@ -136,7 +97,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all border-l-4 border-l-success">
+          <Card className="border-l-4 border-l-success">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
             </CardHeader>
@@ -148,7 +109,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all border-l-4 border-l-warning">
+          <Card className="border-l-4 border-l-warning">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
             </CardHeader>
@@ -160,7 +121,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all border-l-4 border-l-destructive">
+          <Card className="border-l-4 border-l-destructive">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Urgent</CardTitle>
             </CardHeader>
@@ -173,61 +134,49 @@ const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="hover:shadow-lg transition-all cursor-pointer group">
+          <Card className="hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/tasks')}>
             <CardHeader>
-              <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-2">
                 <BarChart3 className="w-6 h-6 text-primary" />
               </div>
               <CardTitle>Tasks</CardTitle>
-              <CardDescription>View and manage your tasks</CardDescription>
+              <CardDescription>View and manage tasks</CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all cursor-pointer group">
+          <Card className="hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/locations')}>
             <CardHeader>
-              <div className="w-12 h-12 bg-accent-light rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center mb-2">
                 <MapPin className="w-6 h-6 text-accent" />
               </div>
               <CardTitle>Locations</CardTitle>
-              <CardDescription>Track locations and geofences</CardDescription>
+              <CardDescription>Track locations</CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all cursor-pointer group">
+          <Card className="hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/petty-cash')}>
             <CardHeader>
-              <div className="w-12 h-12 bg-warning-light rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center mb-2">
                 <DollarSign className="w-6 h-6 text-warning" />
               </div>
               <CardTitle>Petty Cash</CardTitle>
-              <CardDescription>Manage expenses and budgets</CardDescription>
+              <CardDescription>Manage expenses</CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="hover:shadow-lg transition-all cursor-pointer group">
+          <Card className="hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate('/inventory')}>
             <CardHeader>
-              <div className="w-12 h-12 bg-success-light rounded-lg flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center mb-2">
                 <Package className="w-6 h-6 text-success" />
               </div>
               <CardTitle>Inventory</CardTitle>
-              <CardDescription>Track stock and movements</CardDescription>
+              <CardDescription>Track stock</CardDescription>
             </CardHeader>
           </Card>
         </div>
-
-        {/* Welcome Message */}
-        <Card className="mt-8 bg-gradient-primary text-primary-foreground">
-          <CardHeader>
-            <CardTitle className="text-2xl">Welcome to TaskVision</CardTitle>
-            <CardDescription className="text-primary-foreground/80">
-              Your enterprise task management system is ready to use. 
-              {isAdmin ? ' As an admin, you have full access to all features.' : ' Start by viewing your assigned tasks.'}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </main>
-    </div>
+      </div>
+    </Layout>
   );
 };
 
