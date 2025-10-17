@@ -9,27 +9,29 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { PermissionProvider } from "./contexts/PermissionContext";
 import { pwaManager } from "./utils/pwa";
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import RootRedirect from "./pages/Root";
 import ErrorBoundary from "./components/ErrorBoundary";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import EmployeeDashboard from "./pages/dashboards/EmployeeDashboard";
-import ManagerDashboard from "./pages/dashboards/ManagerDashboard";
-import SupervisorDashboard from "./pages/dashboards/SupervisorDashboard";
-import Tasks from "./pages/Tasks";
-import Locations from "./pages/Locations";
-import Chat from "./pages/Chat";
-import PettyCash from "./pages/PettyCash";
-import Inventory from "./pages/Inventory";
-import Geofences from "./pages/Geofences";
-import UserManagement from "./pages/UserManagement";
-import Reports from "./pages/Reports";
-import Jobs from "./pages/Jobs";
-import PermissionManagement from "./pages/PermissionManagement";
-import Meet from "./pages/Meet";
-import EmployeeTracking from "./pages/EmployeeTracking";
-import NotFound from "./pages/NotFound";
+
+// Route-based code splitting
+const Auth = lazy(() => import("./pages/Auth"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const EmployeeDashboard = lazy(() => import("./pages/dashboards/EmployeeDashboard"));
+const ManagerDashboard = lazy(() => import("./pages/dashboards/ManagerDashboard"));
+const SupervisorDashboard = lazy(() => import("./pages/dashboards/SupervisorDashboard"));
+const Tasks = lazy(() => import("./pages/Tasks"));
+const Locations = lazy(() => import("./pages/Locations"));
+const Chat = lazy(() => import("./pages/Chat"));
+const PettyCash = lazy(() => import("./pages/PettyCash"));
+const Inventory = lazy(() => import("./pages/Inventory"));
+const Geofences = lazy(() => import("./pages/Geofences"));
+const UserManagement = lazy(() => import("./pages/UserManagement"));
+const Reports = lazy(() => import("./pages/Reports"));
+const Jobs = lazy(() => import("./pages/Jobs"));
+const PermissionManagement = lazy(() => import("./pages/PermissionManagement"));
+const Meet = lazy(() => import("./pages/Meet"));
+const EmployeeTracking = lazy(() => import("./pages/EmployeeTracking"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -49,29 +51,31 @@ const App = () => {
           <AuthProvider>
             <PermissionProvider>
               <NotificationProvider>
+                <Suspense fallback={<div className="min-h-screen flex items-center justify-center p-6 text-muted-foreground">Loading...</div>}>
                 <Routes>
-              <Route path="/" element={<RootRedirect />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/admin" element={<Dashboard />} />
-              <Route path="/dashboard/manager" element={<ManagerDashboard />} />
-              <Route path="/dashboard/supervisor" element={<SupervisorDashboard />} />
-              <Route path="/dashboard/employee" element={<EmployeeDashboard />} />
-              <Route path="/tasks" element={<Tasks />} />
-              <Route path="/locations" element={<Locations />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/petty-cash" element={<PettyCash />} />
-              <Route path="/inventory" element={<Inventory />} />
-              <Route path="/geofences" element={<Geofences />} />
-              <Route path="/jobs" element={<Jobs />} />
-              <Route path="/users" element={<UserManagement />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="/permissions" element={<PermissionManagement />} />
-              <Route path="/meet" element={<Meet />} />
-              <Route path="/tracking" element={<EmployeeTracking />} />
-              {/* Catch-all route for 404 handling */}
-              <Route path="*" element={<NotFound />} />
-              </Routes>
+                  <Route path="/" element={<RootRedirect />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/dashboard/admin" element={<Dashboard />} />
+                  <Route path="/dashboard/manager" element={<ManagerDashboard />} />
+                  <Route path="/dashboard/supervisor" element={<SupervisorDashboard />} />
+                  <Route path="/dashboard/employee" element={<EmployeeDashboard />} />
+                  <Route path="/tasks" element={<Tasks />} />
+                  <Route path="/locations" element={<Locations />} />
+                  <Route path="/chat" element={<Chat />} />
+                  <Route path="/petty-cash" element={<PettyCash />} />
+                  <Route path="/inventory" element={<Inventory />} />
+                  <Route path="/geofences" element={<Geofences />} />
+                  <Route path="/jobs" element={<Jobs />} />
+                  <Route path="/users" element={<UserManagement />} />
+                  <Route path="/reports" element={<Reports />} />
+                  <Route path="/permissions" element={<PermissionManagement />} />
+                  <Route path="/meet" element={<Meet />} />
+                  <Route path="/tracking" element={<EmployeeTracking />} />
+                  {/* Catch-all route for 404 handling */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                </Suspense>
               </NotificationProvider>
             </PermissionProvider>
           </AuthProvider>
