@@ -297,10 +297,16 @@ const ManagerDashboard = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading manager dashboard...</p>
+        <div className="flex items-center justify-center min-h-screen p-4">
+          <div className="text-center space-y-4 max-w-sm mx-auto">
+            <div className="relative">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <div className="absolute inset-0 w-12 h-12 sm:w-16 sm:h-16 border-4 border-transparent border-t-primary/20 rounded-full animate-pulse"></div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground font-medium">Loading manager dashboard...</p>
+              <p className="text-sm text-muted-foreground/70">Preparing team management tools</p>
+            </div>
           </div>
         </div>
       </Layout>
@@ -309,19 +315,19 @@ const ManagerDashboard = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Manager Dashboard</h1>
-            <p className="text-muted-foreground">Team oversight and management tools</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1 sm:space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold">Manager Dashboard</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Team oversight and management tools</p>
           </div>
-          <div className="flex gap-2">
-            <Button onClick={() => navigate('/reports')} variant="outline">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button onClick={() => navigate('/reports')} variant="outline" className="w-full sm:w-auto">
               <BarChart3 className="w-4 h-4 mr-2" />
               Team Reports
             </Button>
-            <Button onClick={() => navigate('/users')} variant="outline">
+            <Button onClick={() => navigate('/users')} variant="outline" className="w-full sm:w-auto">
               <Users className="w-4 h-4 mr-2" />
               Manage Team
             </Button>
@@ -329,7 +335,7 @@ const ManagerDashboard = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Team Members</CardTitle>

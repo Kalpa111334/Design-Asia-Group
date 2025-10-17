@@ -404,10 +404,16 @@ const UserManagement = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading users...</p>
+        <div className="flex items-center justify-center min-h-screen p-4">
+          <div className="text-center space-y-4 max-w-sm mx-auto">
+            <div className="relative">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <div className="absolute inset-0 w-12 h-12 sm:w-16 sm:h-16 border-4 border-transparent border-t-primary/20 rounded-full animate-pulse"></div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground font-medium">Loading users...</p>
+              <p className="text-sm text-muted-foreground/70">Fetching user data</p>
+            </div>
           </div>
         </div>
       </Layout>
@@ -421,21 +427,21 @@ const UserManagement = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">User Management</h1>
-            <p className="text-muted-foreground">Manage users, roles, and permissions</p>
+          <div className="space-y-1 sm:space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold">User Management</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Manage users, roles, and permissions</p>
           </div>
           <div className="flex gap-2">
             <Dialog open={addUserOpen} onOpenChange={setAddUserOpen}>
               <DialogTrigger asChild>
-                <Button disabled={!canEdit('users')}>
+                <Button disabled={!canEdit('users')} className="w-full sm:w-auto">
                   <UserPlus className="w-4 h-4 mr-2" />
                   Add User
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md w-[95vw] sm:w-full">
                 <DialogHeader>
                   <DialogTitle>Add New User</DialogTitle>
                   <DialogDescription>
