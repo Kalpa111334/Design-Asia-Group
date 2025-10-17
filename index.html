@@ -2,20 +2,67 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>TaskVision - Enterprise Task Management System</title>
     <meta name="description" content="Comprehensive task management with real-time collaboration, location tracking, petty cash management, and inventory control. Enterprise-grade solution for modern teams." />
     <meta name="author" content="TaskVision" />
     <meta name="keywords" content="task management, location tracking, inventory management, petty cash, team collaboration, enterprise software, real-time updates" />
 
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="TaskVision" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TaskVision" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="msapplication-config" content="/icons/browserconfig.xml" />
+    <meta name="msapplication-TileColor" content="#3b82f6" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="theme-color" content="#3b82f6" />
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167x167.png" />
+
+    <!-- Standard Icons -->
+    <link rel="icon" type="image/png" href="/icons/design-asia-favicon.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/icons/design-asia-favicon-16.png" sizes="16x16" />
+    <link rel="preload" as="image" href="/icons/design-asia.png" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Splash Screens for iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-startup-image" href="/icons/apple-splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/icons/apple-splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/icons/apple-splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/icons/apple-splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/icons/apple-splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/icons/apple-splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+    <link rel="apple-touch-startup-image" href="/icons/apple-splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+
+    <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="TaskVision - Enterprise Task Management System" />
     <meta property="og:description" content="Comprehensive task management with real-time collaboration, location tracking, and advanced analytics for modern teams." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:image" content="/icons/icon-512x512.png" />
+    <meta property="og:url" content="https://taskvision.app" />
+    <meta property="og:site_name" content="TaskVision" />
 
+    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:site" content="@taskvision" />
+    <meta name="twitter:image" content="/icons/icon-512x512.png" />
+    <meta name="twitter:title" content="TaskVision - Enterprise Task Management System" />
+    <meta name="twitter:description" content="Comprehensive task management with real-time collaboration, location tracking, and advanced analytics for modern teams." />
+
+    <!-- Additional PWA Meta Tags -->
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
   </head>
 
   <body>

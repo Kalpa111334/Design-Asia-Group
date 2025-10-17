@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Shield, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Alert from '@/utils/alert';
 import { z } from 'zod';
 
 const emailSchema = z.string().email({ message: "Invalid email address" });
@@ -17,15 +18,15 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, user } = useAuth();
+  const { signIn, user, userRole, getDashboardRoute } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
+    if (user && userRole) {
+      navigate(getDashboardRoute(userRole));
     }
-  }, [user, navigate]);
+  }, [user, userRole, navigate, getDashboardRoute]);
 
   const validateForm = () => {
     try {
@@ -34,11 +35,7 @@ const Auth = () => {
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        toast({
-          title: "Validation Error",
-          description: error.errors[0].message,
-          variant: "destructive",
-        });
+        Alert.error('Validation Error', error.errors[0].message);
       }
       return false;
     }
@@ -56,18 +53,10 @@ const Auth = () => {
     try {
       const { error } = await signIn(email, password);
       if (error) {
-        toast({
-          title: "Login Failed",
-          description: error.message || "Invalid email or password",
-          variant: "destructive",
-        });
+        Alert.error('Login Failed', error.message || 'Invalid email or password');
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      });
+      Alert.error('Error', 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
@@ -128,13 +117,6 @@ const Auth = () => {
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <CheckCircle2 className="w-4 h-4 text-success" />
                 <span>Role-based access control</span>
-              </div>
-              <div className="mt-4 p-3 bg-muted rounded-lg">
-                <p className="text-xs text-muted-foreground font-semibold mb-2">Demo Credentials:</p>
-                <p className="text-xs text-muted-foreground">Admin: admin@taskvision.com</p>
-                <p className="text-xs text-muted-foreground">Employee: employee@taskvision.com</p>
-                <p className="text-xs text-muted-foreground mb-1">Manager: manager@taskvision.com</p>
-                <p className="text-xs text-muted-foreground italic">Password: password123</p>
               </div>
             </div>
           </CardContent>

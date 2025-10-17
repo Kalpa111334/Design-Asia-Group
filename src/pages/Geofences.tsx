@@ -5,12 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, MapPin, Circle } from 'lucide-react';
+import { Plus, MapPin, Circle, Navigation } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Layout from '@/components/Layout';
+import Alert from '@/utils/alert';
+import GeofenceMap from '@/components/GeofenceMap';
 
 interface Geofence {
   id: string;
@@ -27,6 +30,7 @@ const Geofences = () => {
   const [geofences, setGeofences] = useState<Geofence[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [gettingLocation, setGettingLocation] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -52,13 +56,52 @@ const Geofences = () => {
       if (error) throw error;
       setGeofences(data || []);
     } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+      Alert.error('Error', error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getCurrentLocation = async () => {
+    if (!navigator.geolocation) {
+      Alert.error('Error', 'Geolocation is not supported by this browser.');
+      return;
+    }
+
+    setGettingLocation(true);
+    
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+      
+      setFormData(prev => ({
+        ...prev,
+        latitude: latitude.toString(),
+        longitude: longitude.toString()
+      }));
+
+      Alert.success('Location Found', `Current location: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+    } catch (error: any) {
+      let errorMessage = 'Failed to get current location.';
+      
+      if (error.code === 1) {
+        errorMessage = 'Location access denied. Please allow location access and try again.';
+      } else if (error.code === 2) {
+        errorMessage = 'Location unavailable. Please check your connection and try again.';
+      } else if (error.code === 3) {
+        errorMessage = 'Location request timed out. Please try again.';
+      }
+      
+      Alert.error('Location Error', errorMessage);
+    } finally {
+      setGettingLocation(false);
     }
   };
 
@@ -78,20 +121,13 @@ const Geofences = () => {
 
       if (error) throw error;
 
-      toast({
-        title: 'Success',
-        description: 'Geofence created successfully',
-      });
+      Alert.success('Geofence created successfully');
 
       setOpen(false);
       setFormData({ name: '', description: '', latitude: '', longitude: '', radius_meters: '100' });
       fetchGeofences();
     } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+      Alert.error('Error', error.message);
     }
   };
 
@@ -104,18 +140,11 @@ const Geofences = () => {
 
       if (error) throw error;
 
-      toast({
-        title: 'Success',
-        description: 'Geofence status updated',
-      });
+      Alert.success('Geofence status updated');
 
       fetchGeofences();
     } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
+      Alert.error('Error', error.message);
     }
   };
 
@@ -194,6 +223,18 @@ const Geofences = () => {
                     />
                   </div>
                 </div>
+                <div className="flex justify-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={getCurrentLocation}
+                    disabled={gettingLocation}
+                    className="flex items-center gap-2"
+                  >
+                    <Navigation className={`w-4 h-4 ${gettingLocation ? 'animate-spin' : ''}`} />
+                    {gettingLocation ? 'Getting Location...' : 'Use Current Location'}
+                  </Button>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="radius">Radius (meters)</Label>
                   <Input
@@ -210,11 +251,42 @@ const Geofences = () => {
           </Dialog>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          {geofences.length === 0 ? (
-            <Card className="col-span-full">
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <MapPin className="w-12 h-12 text-muted-foreground mb-4" />
+        {/* Map and List Tabs */}
+        <Tabs defaultValue="map" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="map">Map View</TabsTrigger>
+            <TabsTrigger value="list">List View</TabsTrigger>
+          </TabsList>
+
+          {/* Map View Tab */}
+          <TabsContent value="map" className="mt-6">
+            <GeofenceMap
+              geofences={geofences}
+              height="700px"
+              showControls={true}
+              onGeofenceClick={(geofence) => {
+                // Could open details dialog here
+                console.log('Clicked geofence:', geofence);
+              }}
+              onMapClick={(lngLat) => {
+                // Pre-fill form with clicked location
+                setFormData({
+                  ...formData,
+                  latitude: lngLat.lat.toFixed(6),
+                  longitude: lngLat.lng.toFixed(6),
+                });
+                setOpen(true);
+              }}
+            />
+          </TabsContent>
+
+          {/* List View Tab */}
+          <TabsContent value="list" className="mt-6">
+            <div className="grid gap-4 md:grid-cols-2">
+              {geofences.length === 0 ? (
+                <Card className="col-span-full">
+                  <CardContent className="flex flex-col items-center justify-center py-12">
+                    <MapPin className="w-12 h-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">No geofences found</p>
               </CardContent>
             </Card>
@@ -267,7 +339,9 @@ const Geofences = () => {
               </Card>
             ))
           )}
-        </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </Layout>
   );

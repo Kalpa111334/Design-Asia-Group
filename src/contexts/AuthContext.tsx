@@ -3,6 +3,10 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
+interface UserRole {
+  role: 'admin' | 'manager' | 'supervisor' | 'employee';
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -11,6 +15,12 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   isAdmin: boolean;
+  isManager: boolean;
+  isSupervisor: boolean;
+  isEmployee: boolean;
+  userRole: string | null;
+  userRoles: UserRole[];
+  getDashboardRoute: (userRole: string | null) => string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,6 +30,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isManager, setIsManager] = useState(false);
+  const [isSupervisor, setIsSupervisor] = useState(false);
+  const [isEmployee, setIsEmployee] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,6 +51,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           }, 0);
         } else {
           setIsAdmin(false);
+          setIsManager(false);
+          setIsSupervisor(false);
+          setIsEmployee(false);
+          setUserRole(null);
+          setUserRoles([]);
         }
       }
     );
@@ -55,21 +75,107 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const checkUserRole = async (userId: string) => {
     try {
+      console.log('Checking user role for userId:', userId);
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', userId)
-        .eq('role', 'admin')
-        .maybeSingle();
+        .eq('user_id', userId);
+
+      console.log('User roles query result:', { data, error });
 
       if (!error && data) {
-        setIsAdmin(true);
+        const roles = data as UserRole[];
+        console.log('User roles found:', roles);
+        setUserRoles(roles);
+        
+        // Set individual role flags
+        const adminRole = roles.some(r => r.role === 'admin');
+        const managerRole = roles.some(r => r.role === 'manager');
+        const supervisorRole = roles.some(r => r.role === 'supervisor');
+        const employeeRole = roles.some(r => r.role === 'employee');
+        
+        console.log('Role flags:', { adminRole, managerRole, supervisorRole, employeeRole });
+        
+        setIsAdmin(adminRole);
+        setIsManager(managerRole);
+        setIsSupervisor(supervisorRole);
+        setIsEmployee(employeeRole);
+        
+        // Set primary role (highest priority)
+        if (adminRole) {
+          setUserRole('admin');
+        } else if (managerRole) {
+          setUserRole('manager');
+        } else if (supervisorRole) {
+          setUserRole('supervisor');
+        } else if (employeeRole) {
+          setUserRole('employee');
+        } else {
+          setUserRole(null);
+        }
       } else {
-        setIsAdmin(false);
+        console.log('No user roles found or error:', error);
+        // If no roles found, check if this is the first user and make them admin
+        const { data: userCount } = await supabase
+          .from('user_roles')
+          .select('id', { count: 'exact', head: true });
+        
+        if (userCount === 0 || (userCount === null && !error)) {
+          console.log('First user detected, creating admin role');
+          // This is the first user, make them admin
+          const { error: insertError } = await supabase
+            .from('user_roles')
+            .insert([{ user_id: userId, role: 'admin' }]);
+          
+          if (!insertError) {
+            console.log('Admin role created successfully');
+            setIsAdmin(true);
+            setIsManager(false);
+            setIsSupervisor(false);
+            setIsEmployee(false);
+            setUserRole('admin');
+            setUserRoles([{ role: 'admin' }]);
+          } else {
+            console.error('Error creating admin role:', insertError);
+            setIsAdmin(false);
+            setIsManager(false);
+            setIsSupervisor(false);
+            setIsEmployee(false);
+            setUserRole(null);
+            setUserRoles([]);
+          }
+        } else {
+          setIsAdmin(false);
+          setIsManager(false);
+          setIsSupervisor(false);
+          setIsEmployee(false);
+          setUserRole(null);
+          setUserRoles([]);
+        }
       }
     } catch (error) {
       console.error('Error checking user role:', error);
       setIsAdmin(false);
+      setIsManager(false);
+      setIsSupervisor(false);
+      setIsEmployee(false);
+      setUserRole(null);
+      setUserRoles([]);
+    }
+  };
+
+  const getDashboardRoute = (userRole: string | null): string => {
+    switch (userRole) {
+      case 'admin':
+        return '/dashboard/admin';
+      case 'manager':
+        return '/dashboard/manager';
+      case 'supervisor':
+        return '/dashboard/supervisor';
+      case 'employee':
+        return '/dashboard/employee';
+      default:
+        return '/dashboard';
     }
   };
 
@@ -80,7 +186,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
     
     if (!error) {
-      navigate('/dashboard');
+      // Check user role first, then redirect to appropriate dashboard
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await checkUserRole(user.id);
+        // Use a small delay to ensure role is set before navigation
+        setTimeout(() => {
+          navigate(getDashboardRoute(userRole));
+        }, 100);
+      } else {
+        navigate('/dashboard');
+      }
     }
     
     return { error };
@@ -104,6 +220,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
+    setIsManager(false);
+    setIsSupervisor(false);
+    setIsEmployee(false);
+    setUserRole(null);
+    setUserRoles([]);
     navigate('/auth');
   };
 
@@ -117,6 +238,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         signUp,
         signOut,
         isAdmin,
+        isManager,
+        isSupervisor,
+        isEmployee,
+        userRole,
+        userRoles,
+        getDashboardRoute,
       }}
     >
       {children}
