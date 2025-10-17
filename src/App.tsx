@@ -11,6 +11,7 @@ import { PermissionProvider } from "./contexts/PermissionContext";
 import { pwaManager } from "./utils/pwa";
 import { useEffect } from "react";
 import RootRedirect from "./pages/Root";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import EmployeeDashboard from "./pages/dashboards/EmployeeDashboard";
@@ -39,43 +40,45 @@ const App = () => {
   }, []);
 
   return (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <PermissionProvider>
-            <NotificationProvider>
-              <Routes>
-            <Route path="/" element={<RootRedirect />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/dashboard/admin" element={<Dashboard />} />
-            <Route path="/dashboard/manager" element={<ManagerDashboard />} />
-            <Route path="/dashboard/supervisor" element={<SupervisorDashboard />} />
-            <Route path="/dashboard/employee" element={<EmployeeDashboard />} />
-            <Route path="/tasks" element={<Tasks />} />
-            <Route path="/locations" element={<Locations />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/petty-cash" element={<PettyCash />} />
-            <Route path="/inventory" element={<Inventory />} />
-            <Route path="/geofences" element={<Geofences />} />
-            <Route path="/jobs" element={<Jobs />} />
-            <Route path="/users" element={<UserManagement />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/permissions" element={<PermissionManagement />} />
-            <Route path="/meet" element={<Meet />} />
-            <Route path="/tracking" element={<EmployeeTracking />} />
-            {/* Catch-all route for 404 handling */}
-            <Route path="*" element={<NotFound />} />
-            </Routes>
-            </NotificationProvider>
-          </PermissionProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <PermissionProvider>
+              <NotificationProvider>
+                <Routes>
+              <Route path="/" element={<RootRedirect />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard/admin" element={<Dashboard />} />
+              <Route path="/dashboard/manager" element={<ManagerDashboard />} />
+              <Route path="/dashboard/supervisor" element={<SupervisorDashboard />} />
+              <Route path="/dashboard/employee" element={<EmployeeDashboard />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/locations" element={<Locations />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/petty-cash" element={<PettyCash />} />
+              <Route path="/inventory" element={<Inventory />} />
+              <Route path="/geofences" element={<Geofences />} />
+              <Route path="/jobs" element={<Jobs />} />
+              <Route path="/users" element={<UserManagement />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/permissions" element={<PermissionManagement />} />
+              <Route path="/meet" element={<Meet />} />
+              <Route path="/tracking" element={<EmployeeTracking />} />
+              {/* Catch-all route for 404 handling */}
+              <Route path="*" element={<NotFound />} />
+              </Routes>
+              </NotificationProvider>
+            </PermissionProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
   );
 };
 

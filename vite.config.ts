@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Handle SPA routing - serve index.html for all routes
+    historyApiFallback: true,
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
@@ -37,5 +39,7 @@ export default defineConfig(({ mode }) => ({
   // PWA specific optimizations
   define: {
     __PWA_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0')
-  }
+  },
+  // Handle base path for deployment
+  base: './'
 }));
