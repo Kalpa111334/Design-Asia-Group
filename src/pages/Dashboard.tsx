@@ -351,25 +351,31 @@ const Dashboard = () => {
   if (loading || dataLoading) {
     return (
       <Layout>
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading dashboard...</p>
+        <div className="min-h-screen flex items-center justify-center p-4">
+          <div className="text-center space-y-4 max-w-sm mx-auto">
+            <div className="relative">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <div className="absolute inset-0 w-12 h-12 sm:w-16 sm:h-16 border-4 border-transparent border-t-primary/20 rounded-full animate-pulse"></div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground font-medium">Loading dashboard...</p>
+              <p className="text-sm text-muted-foreground/70">Preparing your workspace</p>
+            </div>
             
             {/* Temporary admin setup button */}
             {user && !isAdmin && !isManager && !isSupervisor && !isEmployee && userRole !== 'admin' && (
-              <div className="mt-6">
-                <p className="text-sm text-muted-foreground mb-4">
+              <div className="mt-6 space-y-3">
+                <p className="text-sm text-muted-foreground">
                   No user role detected. Click below to set up admin access:
                 </p>
-                <Button onClick={handleCreateAdminRole} variant="outline">
+                <Button onClick={handleCreateAdminRole} variant="outline" className="w-full sm:w-auto">
                   <Settings className="w-4 h-4 mr-2" />
                   Setup Admin Role
                 </Button>
               </div>
             )}
+          </div>
         </div>
-      </div>
       </Layout>
     );
   }
@@ -380,70 +386,70 @@ const Dashboard = () => {
   // Other roles are redirected to their specific dashboards
   return (
     <Layout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Overview of your activities and metrics</p>
+      <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-1 sm:space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-bold">Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Overview of your activities and metrics</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Card className="border-l-4 border-l-primary hover:shadow-lg transition-all">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Tasks</CardTitle>
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Total Tasks</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-2 sm:space-y-3">
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">{stats.totalTasks}</div>
-                <CheckCircle2 className="w-8 h-8 text-primary opacity-50" />
+                <div className="text-2xl sm:text-3xl font-bold">{stats.totalTasks}</div>
+                <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-primary opacity-50" />
               </div>
-              <div className="mt-2">
-                <Progress value={completionRate} className="h-2" />
-                <p className="text-xs text-muted-foreground mt-1">{completionRate.toFixed(0)}% completed</p>
+              <div className="space-y-1">
+                <Progress value={completionRate} className="h-1.5 sm:h-2" />
+                <p className="text-xs text-muted-foreground">{completionRate.toFixed(0)}% completed</p>
               </div>
             </CardContent>
           </Card>
 
           <Card className="border-l-4 border-l-success hover:shadow-lg transition-all">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Completed</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold text-success">{stats.completedTasks}</div>
-                <CheckCircle2 className="w-8 h-8 text-success opacity-50" />
+                <div className="text-2xl sm:text-3xl font-bold text-success">{stats.completedTasks}</div>
+                <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-success opacity-50" />
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-muted-foreground">
                 {stats.inProgressTasks} in progress
               </p>
             </CardContent>
           </Card>
 
           <Card className="border-l-4 border-l-warning hover:shadow-lg transition-all">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Pending</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold text-warning">{stats.pendingTasks}</div>
-                <Clock className="w-8 h-8 text-warning opacity-50" />
+                <div className="text-2xl sm:text-3xl font-bold text-warning">{stats.pendingTasks}</div>
+                <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-warning opacity-50" />
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-muted-foreground">
                 Awaiting action
               </p>
             </CardContent>
           </Card>
 
           <Card className="border-l-4 border-l-destructive hover:shadow-lg transition-all">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Urgent</CardTitle>
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Urgent</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold text-destructive">{stats.urgentTasks}</div>
-                <AlertCircle className="w-8 h-8 text-destructive opacity-50" />
+                <div className="text-2xl sm:text-3xl font-bold text-destructive">{stats.urgentTasks}</div>
+                <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-destructive opacity-50" />
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-muted-foreground">
                 Requires immediate attention
               </p>
             </CardContent>
@@ -451,7 +457,7 @@ const Dashboard = () => {
         </div>
 
         {/* Charts and Analytics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Task Priority Distribution */}
           <Card>
             <CardHeader>

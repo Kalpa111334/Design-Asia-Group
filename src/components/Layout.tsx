@@ -81,17 +81,17 @@ const Layout = ({ children }: LayoutProps) => {
 
   const NavContent = () => (
     <>
-      <div className="flex items-center gap-2 p-4 border-b">
-        <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-primary rounded-xl">
-          <Shield className="w-5 h-5 text-primary-foreground" />
+      <div className="flex items-center gap-2 p-3 sm:p-4 border-b">
+        <div className="inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gradient-primary rounded-xl">
+          <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
         </div>
         <div>
-          <h2 className="font-bold">TaskVision</h2>
+          <h2 className="font-bold text-sm sm:text-base">TaskVision</h2>
           <p className="text-xs text-muted-foreground">Enterprise Management</p>
         </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 p-3 sm:p-4 space-y-1 sm:space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
@@ -99,10 +99,10 @@ const Layout = ({ children }: LayoutProps) => {
             <Link key={item.path} to={item.path}>
               <Button
                 variant={isActive ? 'default' : 'ghost'}
-                className="w-full justify-start"
+                className="w-full justify-start h-9 sm:h-10 text-sm"
               >
-                <Icon className="w-4 h-4 mr-3" />
-                {item.label}
+                <Icon className="w-4 h-4 mr-2 sm:mr-3" />
+                <span className="truncate">{item.label}</span>
               </Button>
             </Link>
           );
@@ -110,29 +110,29 @@ const Layout = ({ children }: LayoutProps) => {
         <Link to="/meet">
           <Button
             variant={location.pathname === '/meet' ? 'default' : 'ghost'}
-            className="w-full justify-start"
+            className="w-full justify-start h-9 sm:h-10 text-sm"
           >
-            <Users className="w-4 h-4 mr-3" />
+            <Users className="w-4 h-4 mr-2 sm:mr-3" />
             Meet
           </Button>
         </Link>
       </nav>
 
-      <div className="p-4 border-t space-y-3">
-        <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
-          <Avatar>
-            <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
+      <div className="p-3 sm:p-4 border-t space-y-2 sm:space-y-3">
+        <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-muted">
+          <Avatar className="w-8 h-8 sm:w-10 sm:h-10">
+            <AvatarFallback className="text-xs sm:text-sm">{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user?.email}</p>
+            <p className="text-xs sm:text-sm font-medium truncate">{user?.email}</p>
             {(isAdmin || isManager || isSupervisor || isEmployee) && (
-              <Badge variant="default" className="text-xs">
+              <Badge variant="default" className="text-xs mt-1">
                 {isAdmin ? 'Admin' : isManager ? 'Manager' : isSupervisor ? 'Supervisor' : 'Employee'}
               </Badge>
             )}
           </div>
         </div>
-        <Button onClick={handleSignOut} variant="outline" className="w-full">
+        <Button onClick={handleSignOut} variant="outline" className="w-full h-9 sm:h-10 text-sm">
           <LogOut className="w-4 h-4 mr-2" />
           Sign Out
         </Button>
@@ -160,22 +160,22 @@ const Layout = ({ children }: LayoutProps) => {
       <div id="pwa-install-anchor" className="hidden md:block pwa-floating"></div>
 
       {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b p-4 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-card border-b p-3 sm:p-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="inline-flex items-center justify-center w-8 h-8 bg-gradient-primary rounded-lg">
-            <Shield className="w-4 h-4 text-primary-foreground" />
+          <div className="inline-flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 bg-gradient-primary rounded-lg">
+            <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-foreground" />
           </div>
-          <span className="font-bold">TaskVision</span>
+          <span className="font-bold text-sm sm:text-base">TaskVision</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <NotificationDropdown />
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="w-5 h-5" />
+              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+                <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
             </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-64">
+          <SheetContent side="left" className="p-0 w-64 sm:w-72">
             <div className="flex flex-col h-full">
               <NavContent />
             </div>
@@ -186,7 +186,7 @@ const Layout = ({ children }: LayoutProps) => {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto pt-16 md:pt-0">
-        <div className="container mx-auto p-6">
+        <div className="container mx-auto p-4 sm:p-6">
           {(() => {
             // Try to infer current resource from path to decide if we show a view-only banner
             const path = location.pathname;

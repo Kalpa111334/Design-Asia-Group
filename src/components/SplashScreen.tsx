@@ -111,58 +111,58 @@ const SplashScreen = () => {
       ></div>
 
       {/* Main content */}
-      <div className="relative z-10 flex flex-col items-center justify-center space-y-12 max-w-4xl mx-auto px-8">
+      <div className="relative z-10 flex flex-col items-center justify-center space-y-6 sm:space-y-8 md:space-y-12 max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
         {/* Logo with enhanced animation */}
         <div className="relative group">
           {/* Outer glow rings */}
-          <div className="absolute inset-0 w-32 h-32 bg-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute inset-2 w-28 h-28 bg-gradient-to-r from-cyan-400/20 to-blue-400/20 rounded-full blur-lg animate-pulse delay-300"></div>
+          <div className="absolute inset-0 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-full blur-xl animate-pulse"></div>
+          <div className="absolute inset-2 w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 bg-gradient-to-r from-cyan-400/20 to-blue-400/20 rounded-full blur-lg animate-pulse delay-300"></div>
           
           {/* Main logo container */}
-          <div className="relative w-24 h-24 bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-3xl shadow-2xl flex items-center justify-center animate-logo-bounce group-hover:scale-110 transition-transform duration-300">
-            <Shield className="w-12 h-12 text-blue-600 animate-pulse" />
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-2xl sm:rounded-3xl shadow-2xl flex items-center justify-center animate-logo-bounce group-hover:scale-110 transition-transform duration-300">
+            <Shield className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-blue-600 animate-pulse" />
             {/* Inner sparkle effect */}
-            <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 animate-sparkle" />
+            <Sparkles className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 animate-sparkle" />
           </div>
           
           {/* Rotating border */}
-          <div className="absolute inset-0 w-24 h-24 border-2 border-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 rounded-3xl animate-spin-slow opacity-60"></div>
+          <div className="absolute inset-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 border-2 border-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 rounded-2xl sm:rounded-3xl animate-spin-slow opacity-60"></div>
         </div>
 
         {/* App branding with enhanced typography */}
-        <div className="text-center space-y-4">
-          <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-cyan-200 animate-title-glow">
+        <div className="text-center space-y-2 sm:space-y-3 md:space-y-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-cyan-200 animate-title-glow leading-tight">
             TaskVision
           </h1>
-          <div className="flex items-center justify-center space-x-2">
-            <div className="w-8 h-0.5 bg-gradient-to-r from-transparent to-blue-400"></div>
-            <p className="text-2xl md:text-3xl font-light text-blue-200 animate-fade-in-delay">
+          <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+            <div className="w-4 sm:w-6 md:w-8 h-0.5 bg-gradient-to-r from-transparent to-blue-400"></div>
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-blue-200 animate-fade-in-delay">
               Enterprise Management
             </p>
-            <div className="w-8 h-0.5 bg-gradient-to-l from-transparent to-blue-400"></div>
+            <div className="w-4 sm:w-6 md:w-8 h-0.5 bg-gradient-to-l from-transparent to-blue-400"></div>
           </div>
-          <p className="text-lg text-blue-300/80 animate-fade-in-delay-2">
+          <p className="text-sm sm:text-base md:text-lg text-blue-300/80 animate-fade-in-delay-2">
             Streamline • Secure • Scale
           </p>
         </div>
 
         {/* Enhanced loading section */}
-        <div className="w-full max-w-md space-y-6">
+        <div className="w-full max-w-sm sm:max-w-md space-y-4 sm:space-y-6">
           {/* Current step indicator */}
-          <div className="flex items-center justify-center space-x-3 animate-fade-in-delay-3">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 animate-fade-in-delay-3">
             {steps.map((step, index) => {
               const Icon = step.icon;
               return (
                 <div
                   key={index}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-500 ${
+                  className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all duration-500 ${
                     index <= currentStep
                       ? 'bg-white/10 backdrop-blur-sm border border-white/20'
                       : 'opacity-30'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 ${step.color} ${index <= currentStep ? 'animate-pulse' : ''}`} />
-                  <span className="text-white/80 text-sm font-medium">{step.text}</span>
+                  <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${step.color} ${index <= currentStep ? 'animate-pulse' : ''}`} />
+                  <span className="text-white/80 text-xs sm:text-sm font-medium hidden sm:inline">{step.text}</span>
                 </div>
               );
             })}
@@ -170,7 +170,7 @@ const SplashScreen = () => {
 
           {/* Enhanced progress bar */}
           <div className="relative">
-            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
+            <div className="w-full h-1.5 sm:h-2 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
               <div 
                 className="h-full bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 rounded-full transition-all duration-300 ease-out relative"
                 style={{ width: `${progress}%` }}
@@ -178,24 +178,24 @@ const SplashScreen = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
               </div>
             </div>
-            <div className="flex justify-between mt-2 text-xs text-white/60">
+            <div className="flex justify-between mt-1.5 sm:mt-2 text-xs text-white/60">
               <span>Loading</span>
               <span className="font-mono">{progress}%</span>
             </div>
           </div>
 
           {/* Loading spinner with enhanced animation */}
-          <div className="flex items-center justify-center space-x-3 animate-fade-in-delay-4">
+          <div className="flex items-center justify-center space-x-2 sm:space-x-3 animate-fade-in-delay-4">
             <div className="relative">
-              <Loader2 className="w-6 h-6 text-white animate-spin" />
-              <div className="absolute inset-0 w-6 h-6 border-2 border-transparent border-t-blue-400 rounded-full animate-spin-slow"></div>
+              <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 text-white animate-spin" />
+              <div className="absolute inset-0 w-5 h-5 sm:w-6 sm:h-6 border-2 border-transparent border-t-blue-400 rounded-full animate-spin-slow"></div>
             </div>
-            <span className="text-white/80 text-lg font-medium">Preparing your workspace...</span>
+            <span className="text-white/80 text-sm sm:text-lg font-medium">Preparing your workspace...</span>
           </div>
         </div>
 
         {/* Enhanced status indicators */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in-delay-5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 animate-fade-in-delay-5">
           {[
             { icon: CheckCircle2, text: 'System Ready', color: 'text-emerald-400' },
             { icon: Lock, text: 'Secure Access', color: 'text-blue-400' },
@@ -204,9 +204,9 @@ const SplashScreen = () => {
           ].map((item, index) => {
             const Icon = item.icon;
             return (
-              <div key={index} className="flex items-center space-x-2 px-3 py-2 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
-                <Icon className={`w-4 h-4 ${item.color} animate-pulse`} />
-                <span className="text-white/80 text-sm">{item.text}</span>
+              <div key={index} className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
+                <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${item.color} animate-pulse`} />
+                <span className="text-white/80 text-xs sm:text-sm">{item.text}</span>
               </div>
             );
           })}
