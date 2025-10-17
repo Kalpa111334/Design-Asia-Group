@@ -58,10 +58,16 @@ const SplashScreen = () => {
     if (!loading && !authLoading) {
       // Small delay for smooth transition
       const redirectTimer = setTimeout(() => {
-        if (user) {
-          navigate('/dashboard');
-        } else {
-          navigate('/auth');
+        try {
+          if (user) {
+            navigate('/dashboard');
+          } else {
+            navigate('/auth');
+          }
+        } catch (error) {
+          console.error('Navigation error:', error);
+          // Fallback to home page
+          navigate('/');
         }
       }, 500);
 

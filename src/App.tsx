@@ -28,6 +28,7 @@ import Jobs from "./pages/Jobs";
 import PermissionManagement from "./pages/PermissionManagement";
 import Meet from "./pages/Meet";
 import EmployeeTracking from "./pages/EmployeeTracking";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -66,7 +67,8 @@ const App = () => {
             <Route path="/permissions" element={<PermissionManagement />} />
             <Route path="/meet" element={<Meet />} />
             <Route path="/tracking" element={<EmployeeTracking />} />
-            {/* Catch-all route removed per request */}
+            {/* Catch-all route for 404 handling */}
+            <Route path="*" element={<NotFound />} />
             </Routes>
             </NotificationProvider>
           </PermissionProvider>
