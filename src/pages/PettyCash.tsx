@@ -324,10 +324,16 @@ const PettyCash = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading transactions...</p>
+        <div className="flex items-center justify-center min-h-screen p-4">
+          <div className="text-center space-y-4 max-w-sm mx-auto">
+            <div className="relative">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <div className="absolute inset-0 w-12 h-12 sm:w-16 sm:h-16 border-4 border-transparent border-t-primary/20 rounded-full animate-pulse"></div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground font-medium">Loading transactions...</p>
+              <p className="text-sm text-muted-foreground/70">Preparing petty cash data</p>
+            </div>
           </div>
         </div>
       </Layout>
@@ -336,69 +342,70 @@ const PettyCash = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">Petty Cash</h1>
-            <p className="text-muted-foreground">Manage expense transactions and budgets</p>
+          <div className="space-y-1 sm:space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold">Petty Cash</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Manage expense transactions and budgets</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button 
               variant="outline"
               onClick={() => setShowBudgetTracker(!showBudgetTracker)}
+              className="w-full sm:w-auto"
             >
               <TrendingUp className="w-4 h-4 mr-2" />
               Budget Tracker
             </Button>
             <Dialog open={transactionOpen} onOpenChange={setTransactionOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                New Transaction
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Submit Expense</DialogTitle>
+              <DialogTrigger asChild>
+                <Button className="w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Transaction
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="w-[95vw] sm:w-full max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Submit Expense</DialogTitle>
                   <DialogDescription>Submit a new petty cash expense</DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleCreateTransaction} className="space-y-4">
-                <div className="space-y-2">
+                </DialogHeader>
+                <form onSubmit={handleCreateTransaction} className="space-y-4">
+                  <div className="space-y-2">
                     <Label htmlFor="amount">Amount *</Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="0.01"
-                    value={formData.amount}
-                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
+                    <Input
+                      id="amount"
+                      type="number"
+                      step="0.01"
+                      value={formData.amount}
+                      onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="category">Category *</Label>
                     <Select value={formData.category_id} onValueChange={(value) => setFormData({ ...formData, category_id: value })} required>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
                             {cat.name} (Budget: LKR {cat.budget_limit})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="description">Description *</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={3}
-                    required
-                  />
-                </div>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      rows={3}
+                      required
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="receipt">Receipt (Optional)</Label>
                     <FileUpload
@@ -419,15 +426,15 @@ const PettyCash = () => {
             {isAdmin && (
               <Dialog open={categoryOpen} onOpenChange={setCategoryOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     <Settings className="w-4 h-4 mr-2" />
-                    Categories
+                    New Category
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="w-[95vw] sm:w-full max-w-md">
                   <DialogHeader>
-                    <DialogTitle>Create Category</DialogTitle>
-                    <DialogDescription>Add a new expense category</DialogDescription>
+                    <DialogTitle>Add Category</DialogTitle>
+                    <DialogDescription>Create a new petty cash category</DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleCreateCategory} className="space-y-4">
                     <div className="space-y-2">

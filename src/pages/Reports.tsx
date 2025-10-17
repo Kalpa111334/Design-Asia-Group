@@ -295,10 +295,16 @@ const Reports = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading analytics...</p>
+        <div className="flex items-center justify-center min-h-screen p-4">
+          <div className="text-center space-y-4 max-w-sm mx-auto">
+            <div className="relative">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+              <div className="absolute inset-0 w-12 h-12 sm:w-16 sm:h-16 border-4 border-transparent border-t-primary/20 rounded-full animate-pulse"></div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground font-medium">Loading analytics...</p>
+              <p className="text-sm text-muted-foreground/70">Crunching the latest metrics</p>
+            </div>
           </div>
         </div>
       </Layout>
@@ -307,16 +313,16 @@ const Reports = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold">Reports & Analytics</h1>
-            <p className="text-muted-foreground">Comprehensive insights and performance metrics</p>
+          <div className="space-y-1 sm:space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold">Reports & Analytics</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Comprehensive insights and performance metrics</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Calendar className="w-4 h-4 text-muted-foreground" />
             <Select value={timeRange} onValueChange={setTimeRange}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-full sm:w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -329,7 +335,7 @@ const Reports = () => {
         </div>
 
         {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <Card className="border-l-4 border-l-primary">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -338,8 +344,8 @@ const Reports = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold mb-2">{analytics.tasks.completionRate.toFixed(1)}%</div>
-              <Progress value={analytics.tasks.completionRate} className="h-2" />
+              <div className="text-2xl sm:text-3xl font-bold mb-2">{analytics.tasks.completionRate.toFixed(1)}%</div>
+              <Progress value={analytics.tasks.completionRate} className="h-1.5 sm:h-2" />
               <p className="text-xs text-muted-foreground mt-2">
                 {analytics.tasks.completed} of {analytics.tasks.total} completed
               </p>
@@ -354,7 +360,7 @@ const Reports = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold mb-2">${analytics.expenses.total.toFixed(2)}</div>
+              <div className="text-2xl sm:text-3xl font-bold mb-2">${analytics.expenses.total.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">
                 Avg: ${analytics.expenses.avgAmount.toFixed(2)} per transaction
               </p>
@@ -372,7 +378,7 @@ const Reports = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold mb-2">${analytics.inventory.totalValue.toFixed(2)}</div>
+              <div className="text-2xl sm:text-3xl font-bold mb-2">${analytics.inventory.totalValue.toFixed(2)}</div>
               <p className="text-xs text-muted-foreground">
                 {analytics.inventory.totalItems} items tracked
               </p>
@@ -390,7 +396,7 @@ const Reports = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold mb-2">{analytics.users.active}</div>
+              <div className="text-2xl sm:text-3xl font-bold mb-2">{analytics.users.active}</div>
               <p className="text-xs text-muted-foreground">
                 of {analytics.users.total} total users
               </p>
@@ -400,7 +406,7 @@ const Reports = () => {
         </div>
 
         <Tabs defaultValue="tasks" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-4 max-w-full">
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="expenses">Expenses</TabsTrigger>
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
@@ -408,7 +414,7 @@ const Reports = () => {
           </TabsList>
 
           <TabsContent value="tasks" className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <Card>
                 <CardHeader>
                   <CardTitle>Task Status Breakdown</CardTitle>

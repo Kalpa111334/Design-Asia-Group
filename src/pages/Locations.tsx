@@ -221,15 +221,15 @@ const Locations = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Employee Locations</h1>
-            <p className="text-muted-foreground">Real-time location tracking and history</p>
+          <div className="space-y-1 sm:space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold">Employee Locations</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Real-time location tracking and history</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Select value={timeFilter} onValueChange={setTimeFilter}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-full sm:w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -242,15 +242,15 @@ const Locations = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           <Card className="border-l-4 border-l-primary">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground">Active Users</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">{stats.activeUsers}</div>
-                <Users className="w-8 h-8 text-primary opacity-50" />
+                <div className="text-2xl sm:text-3xl font-bold">{stats.activeUsers}</div>
+                <Users className="w-6 h-6 sm:w-8 sm:h-8 text-primary opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -261,8 +261,8 @@ const Locations = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">{stats.totalLocations}</div>
-                <TrendingUp className="w-8 h-8 text-accent opacity-50" />
+                <div className="text-2xl sm:text-3xl font-bold">{stats.totalLocations}</div>
+                <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-accent opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -273,8 +273,8 @@ const Locations = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-3xl font-bold">±{stats.avgAccuracy.toFixed(0)}m</div>
-                <Navigation className="w-8 h-8 text-success opacity-50" />
+                <div className="text-2xl sm:text-3xl font-bold">±{stats.avgAccuracy.toFixed(0)}m</div>
+                <Navigation className="w-6 h-6 sm:w-8 sm:h-8 text-success opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -285,8 +285,8 @@ const Locations = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <div className="text-lg font-bold">{stats.lastUpdate ? getTimeSince(stats.lastUpdate) : 'N/A'}</div>
-                <Clock className="w-8 h-8 text-warning opacity-50" />
+                <div className="text-base sm:text-lg font-bold">{stats.lastUpdate ? getTimeSince(stats.lastUpdate) : 'N/A'}</div>
+                <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-warning opacity-50" />
               </div>
             </CardContent>
           </Card>
