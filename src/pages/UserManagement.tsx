@@ -50,6 +50,7 @@ const UserManagement = () => {
   const [addUserOpen, setAddUserOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [userAccountStatus, setUserAccountStatus] = useState<Record<string, any>>({});
   const { user, isAdmin } = useAuth();
   const { canEdit, hasAccess, checkAccessAndNavigate } = usePermissions();
   const { toast } = useToast();
@@ -118,6 +119,11 @@ const UserManagement = () => {
       });
 
       setRoleStats(stats);
+      
+      // Fetch user account status after users are loaded
+      if (usersData.length > 0) {
+        fetchUserAccountStatus(usersData);
+      }
     } catch (error: any) {
       const { default: Alert } = await import('@/utils/alert');
       Alert.error('Error', error.message);
@@ -226,12 +232,78 @@ const UserManagement = () => {
     }
   };
 
+  const handleDisableUser = async (userId: string, userName: string) => {
+    const confirmed = await Alert.confirm(
+      'Disable User Account', 
+      `Are you sure you want to disable ${userName}'s account? They will not be able to access the system until an admin re-enables it.`
+    );
+    if (!confirmed) return;
+
+    try {
+      const { error } = await supabase.rpc('admin_disable_user', {
+        user_id_param: userId
+      });
+
+      if (error) throw error;
+
+      Alert.success('Success', 'User account has been disabled successfully');
+      fetchUsers();
+      fetchUserAccountStatus();
+    } catch (error: any) {
+      console.error('Error disabling user:', error);
+      Alert.error('Error', error.message || 'Failed to disable user account');
+    }
+  };
+
+  const handleEnableUser = async (userId: string, userName: string) => {
+    const confirmed = await Alert.confirm(
+      'Enable User Account', 
+      `Are you sure you want to enable ${userName}'s account? They will be able to access the system again.`
+    );
+    if (!confirmed) return;
+
+    try {
+      const { error } = await supabase.rpc('admin_enable_user', {
+        user_id_param: userId
+      });
+
+      if (error) throw error;
+
+      Alert.success('Success', 'User account has been enabled successfully');
+      fetchUsers();
+      fetchUserAccountStatus();
+    } catch (error: any) {
+      console.error('Error enabling user:', error);
+      Alert.error('Error', error.message || 'Failed to enable user account');
+    }
+  };
+
+  const fetchUserAccountStatus = async (usersToCheck: UserProfile[] = users) => {
+    try {
+      const statusMap: Record<string, any> = {};
+      
+      for (const userProfile of usersToCheck) {
+        const { data, error } = await supabase.rpc('get_user_account_status', {
+          user_id_param: userProfile.id
+        });
+        
+        if (!error && data && data.length > 0) {
+          statusMap[userProfile.id] = data[0];
+        }
+      }
+      
+      setUserAccountStatus(statusMap);
+    } catch (error: any) {
+      console.error('Error fetching user account status:', error);
+    }
+  };
+
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      // Use the regular signup method instead of admin.createUser
-      // This will work with the current Supabase setup
+      // Create user directly without email confirmation
+      // The database trigger will automatically confirm the email
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: newUserFormData.email,
         password: newUserFormData.password,
@@ -239,7 +311,7 @@ const UserManagement = () => {
           data: {
             full_name: newUserFormData.full_name,
           },
-          emailRedirectTo: undefined, // Don't redirect for admin-created users
+          // No emailRedirectTo - email will be auto-confirmed by database trigger
         },
       });
 
@@ -252,24 +324,10 @@ const UserManagement = () => {
         throw new Error('User creation failed - no user returned');
       }
 
-      console.log('Auth user created:', authData.user.id);
+      console.log('User created successfully:', authData.user.id);
 
-      // Wait longer for the auth user to be fully created
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      console.log('User created, proceeding with profile creation...');
-      
-      // Confirm the user's email to avoid confirmation issues
-      const { error: confirmError } = await supabase.rpc('confirm_user_email', {
-        user_id_param: authData.user.id,
-      });
-
-      if (confirmError) {
-        console.warn('Email confirmation failed:', confirmError);
-        // Continue anyway, this is not critical
-      }
-
-      console.log('Email confirmed, creating profile...');
+      // Wait for the database trigger to create profile and confirm email
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Create or update profile using the function with elevated permissions
       const { error: profileError } = await supabase.rpc('create_user_profile', {
@@ -564,9 +622,16 @@ const UserManagement = () => {
                         </Avatar>
                         <div>
                           <CardTitle className="text-lg">{userProfile.full_name}</CardTitle>
-                          <Badge variant={getRoleBadgeVariant(role)} className="mt-1">
-                            {role}
-                          </Badge>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Badge variant={getRoleBadgeVariant(role)}>
+                              {role}
+                            </Badge>
+                            {userAccountStatus[userProfile.id]?.is_banned && (
+                              <Badge variant="destructive" className="text-xs">
+                                Disabled
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -607,15 +672,41 @@ const UserManagement = () => {
                         </Button>
                       )}
                       {canEdit('users') && userProfile.id !== user?.id && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => handleDeleteUser(userProfile.id)}
-                        >
-                          <Trash2 className="w-3 h-3 mr-2" />
-                          Delete
-                        </Button>
+                        <>
+                          {/* Disable/Enable Button */}
+                          {userAccountStatus[userProfile.id]?.is_banned ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-green-600 hover:text-green-700"
+                              onClick={() => handleEnableUser(userProfile.id, userProfile.full_name)}
+                            >
+                              <Shield className="w-3 h-3 mr-2" />
+                              Enable
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-orange-600 hover:text-orange-700"
+                              onClick={() => handleDisableUser(userProfile.id, userProfile.full_name)}
+                            >
+                              <Shield className="w-3 h-3 mr-2" />
+                              Disable
+                            </Button>
+                          )}
+                          
+                          {/* Delete Button */}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => handleDeleteUser(userProfile.id)}
+                          >
+                            <Trash2 className="w-3 h-3 mr-2" />
+                            Delete
+                          </Button>
+                        </>
                       )}
                       {userProfile.id === user?.id && (
                         <div className="flex-1 flex items-center justify-center text-xs text-muted-foreground">
