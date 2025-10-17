@@ -295,26 +295,26 @@ const Meet = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold">Meet</h1>
-            <p className="text-muted-foreground">MIDIZ</p>
+            <h1 className="text-2xl sm:text-3xl font-bold">Meet</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">MIDIZ</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Input placeholder="Enter Room ID" value={roomId} onChange={(e) => setRoomId(e.target.value)} className="w-48" />
+          <div className="flex w-full sm:w-auto items-center gap-2">
+            <Input placeholder="Enter Room ID" value={roomId} onChange={(e) => setRoomId(e.target.value)} className="w-full sm:w-48" />
             {!joined ? (
-              <Button onClick={joinRoom} className="btn-animated"><Users className="w-4 h-4 mr-2"/>Join</Button>
+              <Button onClick={joinRoom} className="btn-animated w-full sm:w-auto"><Users className="w-4 h-4 mr-2"/>Join</Button>
             ) : (
-              <div className="flex items-center gap-2">
-                <Button onClick={copyInvite} variant="outline" className="btn-animated"><Copy className="w-4 h-4 mr-2"/>Copy Link</Button>
-                <Button onClick={openInvite} className="btn-animated">Add & Invite</Button>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Button onClick={copyInvite} variant="outline" className="btn-animated w-full sm:w-auto"><Copy className="w-4 h-4 mr-2"/>Copy Link</Button>
+                <Button onClick={openInvite} className="btn-animated w-full sm:w-auto">Add & Invite</Button>
               </div>
             )}
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 md:grid-cols-4">
           <Card className="md:col-span-3 elevated-card">
             <CardHeader>
               <CardTitle>Conference</CardTitle>
@@ -384,7 +384,7 @@ const Meet = () => {
           </Card>
         </div>
         <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-          <DialogContent>
+          <DialogContent className="w-[95vw] sm:w-full">
             <DialogHeader>
               <DialogTitle>Invite Participants</DialogTitle>
               <DialogDescription>Share the link or send email invites.</DialogDescription>
