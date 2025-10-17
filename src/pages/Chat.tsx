@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Send, MessageSquare, Search, CheckCheck, Check, Circle } from 'lucide-react';
@@ -169,8 +169,10 @@ const Chat = () => {
     }
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     if (!selectedUser || !newMessage.trim()) return;
 
     try {
@@ -214,18 +216,18 @@ const Chat = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Chat</h1>
-            <p className="text-muted-foreground">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+          <div className="space-y-1 sm:space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold">Chat</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Real-time messaging with team members
               {totalUnread > 0 && ` • ${totalUnread} unread`}
             </p>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4 h-[calc(100vh-220px)]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[calc(100vh-220px)] md:h-[calc(100vh-240px)]">
           {/* Contacts Sidebar */}
           <Card className="md:col-span-1 flex flex-col">
             <CardHeader className="pb-3">
@@ -380,19 +382,23 @@ const Chat = () => {
                       </div>
                     )}
                   </ScrollArea>
-                  <div className="p-4 border-t">
-                    <form onSubmit={handleSendMessage} className="flex gap-2">
+                  <CardFooter className="border-t p-3 sm:p-4">
+                    <div className="flex items-center gap-2">
                       <Input
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Type a message..."
-                        className="flex-1"
+                        placeholder={selectedUser ? `Message ${selectedUser.full_name}...` : 'Select a user to start chatting'}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSendMessage();
+                        }}
+                        disabled={!selectedUser}
                       />
-                      <Button type="submit" size="icon" disabled={!newMessage.trim()}>
-                        <Send className="w-4 h-4" />
+                      <Button onClick={handleSendMessage} disabled={!newMessage.trim() || !selectedUser}>
+                        <Send className="w-4 h-4 mr-2" />
+                        Send
                       </Button>
-                    </form>
-                  </div>
+                    </div>
+                  </CardFooter>
                 </>
               ) : (
                 <div className="flex-1 flex items-center justify-center text-muted-foreground p-4">

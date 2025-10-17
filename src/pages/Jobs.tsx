@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useNavigate } from 'react-router-dom';
 
 interface JobForm {
   category: 'DA' | 'TB' | 'AI';
@@ -49,6 +50,7 @@ const Jobs = () => {
   const [materials, setMaterials] = useState<MaterialRow[]>([
     { id: crypto.randomUUID(), item_date: '', description: '', quantity: '', rate: '' },
   ]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isAdmin) {
@@ -165,10 +167,10 @@ const Jobs = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Jobs</h1>
-          <p className="text-muted-foreground">Create a job and automatically generate a task.</p>
+      <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-1 sm:space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-bold">Jobs</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Create a job and automatically generate a task.</p>
         </div>
 
         <Card>
@@ -227,23 +229,23 @@ const Jobs = () => {
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <h3 className="font-semibold">Materials Issued</h3>
-                  <Button type="button" variant="outline" onClick={addMaterial}>Add Row</Button>
+                  <Button type="button" variant="outline" onClick={addMaterial} className="w-full sm:w-auto">Add Row</Button>
                 </div>
-                <div className="grid grid-cols-12 gap-2 text-sm font-medium text-muted-foreground">
+                <div className="hidden sm:grid grid-cols-12 gap-2 text-sm font-medium text-muted-foreground">
                   <div className="col-span-2">Date</div>
                   <div className="col-span-6">Description</div>
                   <div className="col-span-2">Qty</div>
                   <div className="col-span-2">Rate</div>
                 </div>
                 {materials.map((m) => (
-                  <div key={m.id} className="grid grid-cols-12 gap-2">
-                    <Input type="date" className="col-span-2" value={m.item_date} onChange={(e) => updateMaterial(m.id, 'item_date', e.target.value)} />
-                    <Input className="col-span-6" value={m.description} onChange={(e) => updateMaterial(m.id, 'description', e.target.value)} />
-                    <Input type="number" step="0.01" className="col-span-2" value={m.quantity} onChange={(e) => updateMaterial(m.id, 'quantity', e.target.value)} />
-                    <div className="col-span-2 flex gap-2">
-                      <Input type="number" step="0.01" value={m.rate} onChange={(e) => updateMaterial(m.id, 'rate', e.target.value)} />
+                  <div key={m.id} className="grid grid-cols-1 sm:grid-cols-12 gap-2 p-2 sm:p-0 border sm:border-0 rounded-md sm:rounded-none">
+                    <Input type="date" className="sm:col-span-2" value={m.item_date} onChange={(e) => updateMaterial(m.id, 'item_date', e.target.value)} />
+                    <Input className="sm:col-span-6" value={m.description} onChange={(e) => updateMaterial(m.id, 'description', e.target.value)} placeholder="Description" />
+                    <Input type="number" step="0.01" className="sm:col-span-2" value={m.quantity} onChange={(e) => updateMaterial(m.id, 'quantity', e.target.value)} placeholder="Qty" />
+                    <div className="sm:col-span-2 flex gap-2">
+                      <Input type="number" step="0.01" value={m.rate} onChange={(e) => updateMaterial(m.id, 'rate', e.target.value)} placeholder="Rate" />
                       <Button type="button" variant="ghost" onClick={() => removeMaterial(m.id)}>Remove</Button>
                     </div>
                   </div>
@@ -265,19 +267,12 @@ const Jobs = () => {
               <p className="text-muted-foreground">No jobs yet.</p>
             ) : (
               jobs.map((j) => (
-                <div key={j.id} className="p-4 border rounded-lg flex items-center justify-between">
+                <div key={j.id} className="p-3 sm:p-4 border rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="font-semibold truncate">{j.customer_name} — {j.job_number}</p>
-                    <p className="text-xs text-muted-foreground">{j.category} {j.contractor_name ? `• ${j.contractor_name}` : ''}</p>
+                    <p className="font-medium truncate">{j.job_number} • {j.customer_name}</p>
+                    <p className="text-sm text-muted-foreground truncate">{j.category} • {j.sales_person || 'N/A'}</p>
                   </div>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      window.location.href = `/tasks?jobId=${j.id}`;
-                    }}
-                  >
-                    Create Task
-                  </Button>
+                  <Button variant="outline" onClick={() => navigate(`/tasks?jobId=${j.id}`)} className="w-full sm:w-auto">Create Task</Button>
                 </div>
               ))
             )}

@@ -151,8 +151,11 @@ const Geofences = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex items-center justify-center h-full">
-          <p>Loading geofences...</p>
+        <div className="flex items-center justify-center min-h-screen p-4">
+          <div className="text-center space-y-2">
+            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="text-sm text-muted-foreground">Loading geofences...</p>
+          </div>
         </div>
       </Layout>
     );
@@ -160,20 +163,20 @@ const Geofences = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Geofences</h1>
-            <p className="text-muted-foreground">Manage location boundaries</p>
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="space-y-1 sm:space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold">Geofences</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Manage location boundaries</p>
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <Plus className="w-4 h-4 mr-2" />
                 Create Geofence
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="w-[95vw] sm:w-full max-w-md">
               <DialogHeader>
                 <DialogTitle>Create New Geofence</DialogTitle>
                 <DialogDescription>

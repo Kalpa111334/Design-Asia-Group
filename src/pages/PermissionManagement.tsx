@@ -236,27 +236,27 @@ const PermissionManagement = () => {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Permission Management</h1>
-            <p className="text-muted-foreground">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+          <div className="space-y-1 sm:space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-bold">Permission Management</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Configure access permissions for different user roles across system resources
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={fetchPermissions} disabled={loading}>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={fetchPermissions} disabled={loading} className="w-full sm:w-auto">
               <RotateCcw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
-            <Button variant="destructive" onClick={resetToDefaults} disabled={loading}>
+            <Button variant="destructive" onClick={resetToDefaults} disabled={loading} className="w-full sm:w-auto">
               Reset to Defaults
             </Button>
           </div>
         </div>
 
         <Tabs value={selectedRole} onValueChange={(value) => setSelectedRole(value as UserRole)}>
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
             {roles.map(role => (
               <TabsTrigger key={role} value={role}>
                 <Users className="w-4 h-4 mr-2" />
@@ -278,23 +278,23 @@ const PermissionManagement = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4">
+                  <div className="grid gap-3 sm:gap-4">
                     {resources.map(resource => {
                       const currentPermission = getPermissionForRole(role, resource);
                       const isSaving = saving === `${role}-${resource}`;
 
                       const containerClasses =
                         currentPermission === 'no_access'
-                          ? 'p-4 border rounded-lg bg-red-50 border-red-200'
+                          ? 'p-3 sm:p-4 border rounded-lg bg-red-50 border-red-200'
                           : currentPermission === 'view_only'
-                          ? 'p-4 border rounded-lg bg-amber-50 border-amber-200'
-                          : 'p-4 border rounded-lg bg-primary/5 border-primary/20';
+                          ? 'p-3 sm:p-4 border rounded-lg bg-amber-50 border-amber-200'
+                          : 'p-3 sm:p-4 border rounded-lg bg-primary/5 border-primary/20';
 
                       return (
-                        <div key={resource} className={`flex items-center justify-between ${containerClasses}`}>
-                          <div className="flex items-center gap-3">
+                        <div key={resource} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${containerClasses}`}>
+                          <div className="flex items-start sm:items-center gap-3">
                             <div
-                              className={`w-2 h-2 rounded-full ${
+                              className={`w-2 h-2 rounded-full mt-1 sm:mt-0 ${
                                 currentPermission === 'no_access'
                                   ? 'bg-red-500'
                                   : currentPermission === 'view_only'
