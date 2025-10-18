@@ -978,7 +978,7 @@ const Tasks = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {/* Task Timer */}
+                    {/* Task Timer with Actions */}
                     <TaskTimer
                       taskId={task.id}
                       estimatedHours={task.estimated_hours}
@@ -989,11 +989,11 @@ const Tasks = () => {
                       compact={true}
                     />
 
-                    {/* Complete Task Button - Only show if task is in_progress and timer is not running */}
-                    {canEdit('tasks') && task.status === 'in_progress' && !isTimerRunning(task.id) && (
+                    {/* Complete with Photo Button - Only show for tasks requiring proof */}
+                    {canEdit('tasks') && task.requires_proof && task.status === 'in_progress' && (
                       <Button size="sm" onClick={() => handleCompleteTask(task.id)}>
                         <Camera className="w-4 h-4 mr-2" />
-                        Complete
+                        Complete with Photo
                       </Button>
                     )}
 

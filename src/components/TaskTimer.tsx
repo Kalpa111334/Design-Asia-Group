@@ -98,16 +98,52 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({
 
   if (compact) {
     return (
-      <div className="flex items-center gap-2">
-        <Badge className={`${getStatusColor()} text-xs`}>
-          {getStatusIcon()}
-          <span className="ml-1">{getStatusText()}</span>
-        </Badge>
-        <span className="text-sm font-mono">{formattedTime}</span>
-        {remainingTime !== null && (
-          <span className="text-xs text-muted-foreground">
-            ({remainingTime > 0 ? formatRemainingTime(remainingTime) : 'Overdue'})
-          </span>
+      <div className="flex items-center gap-2 flex-wrap">
+        {/* Timer Display */}
+        <div className="flex items-center gap-2">
+          <Badge className={`${getStatusColor()} text-xs`}>
+            {getStatusIcon()}
+            <span className="ml-1">{getStatusText()}</span>
+          </Badge>
+          <span className="text-sm font-mono">{formattedTime}</span>
+          {remainingTime !== null && (
+            <span className="text-xs text-muted-foreground">
+              ({remainingTime > 0 ? formatRemainingTime(remainingTime) : 'Overdue'})
+            </span>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        {canEdit && (
+          <div className="flex gap-1">
+            {!isRunning && status === 'pending' && (
+              <Button onClick={handleStart} size="sm" variant="outline" className="h-7 px-2 text-xs">
+                <Play className="h-3 w-3 mr-1" />
+                Start
+              </Button>
+            )}
+
+            {isRunning && !isPaused && (
+              <Button onClick={handlePause} size="sm" variant="outline" className="h-7 px-2 text-xs">
+                <Pause className="h-3 w-3 mr-1" />
+                Pause
+              </Button>
+            )}
+
+            {isPaused && (
+              <Button onClick={handleResume} size="sm" variant="outline" className="h-7 px-2 text-xs">
+                <RotateCcw className="h-3 w-3 mr-1" />
+                Resume
+              </Button>
+            )}
+
+            {isRunning && (
+              <Button onClick={handleStop} size="sm" variant="destructive" className="h-7 px-2 text-xs">
+                <Square className="h-3 w-3 mr-1" />
+                Stop
+              </Button>
+            )}
+          </div>
         )}
       </div>
     );
