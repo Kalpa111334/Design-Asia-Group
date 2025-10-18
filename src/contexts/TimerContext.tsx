@@ -51,7 +51,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
             newTimers.set(taskId, {
               ...timer,
               currentSessionDuration: Math.max(0, sessionDuration),
-              totalDuration: timer.totalDuration + (sessionDuration - timer.currentSessionDuration)
+              totalDuration: Math.max(0, sessionDuration)
             });
           }
         });
@@ -134,13 +134,16 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     if (!timer || !timer.isRunning || timer.isPaused) return;
 
     const now = Date.now();
+    const currentSessionDuration = now - (timer.startTime || 0) - timer.totalPausedDuration;
+    
     setTimers(prev => {
       const newTimers = new Map(prev);
       newTimers.set(taskId, {
         ...timer,
         isPaused: true,
         pausedTime: now,
-        totalPausedDuration: timer.totalPausedDuration + (now - (timer.startTime || 0) - timer.currentSessionDuration),
+        currentSessionDuration: Math.max(0, currentSessionDuration),
+        totalDuration: Math.max(0, currentSessionDuration),
       });
       return newTimers;
     });
@@ -151,13 +154,15 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     if (!timer || !timer.isRunning || !timer.isPaused) return;
 
     const now = Date.now();
+    const pausedDuration = now - (timer.pausedTime || now);
+    
     setTimers(prev => {
       const newTimers = new Map(prev);
       newTimers.set(taskId, {
         ...timer,
         isPaused: false,
-        startTime: now - timer.currentSessionDuration,
         pausedTime: null,
+        totalPausedDuration: timer.totalPausedDuration + pausedDuration,
       });
       return newTimers;
     });
@@ -168,15 +173,16 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     if (!timer || !timer.isRunning) return;
 
     try {
+      // Calculate final duration
+      const now = Date.now();
+      const finalDuration = now - (timer.startTime || 0) - timer.totalPausedDuration;
+      
       // Update time entry in database
       if (timer.timeEntryId) {
-        const now = new Date();
-        const totalDuration = timer.totalDuration + timer.currentSessionDuration;
-        
         await supabase
           .from('task_time_entries')
           .update({
-            ended_at: now.toISOString(),
+            ended_at: new Date(now).toISOString(),
           })
           .eq('id', timer.timeEntryId);
       }
@@ -201,7 +207,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     const timer = timers.get(taskId);
     if (!timer) return '00:00:00';
 
-    const totalSeconds = Math.floor((timer.totalDuration + timer.currentSessionDuration) / 1000);
+    const totalSeconds = Math.floor(timer.totalDuration / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
@@ -213,7 +219,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     const timer = timers.get(taskId);
     if (!timer || !timer.estimatedHours) return null;
 
-    const totalSeconds = Math.floor((timer.totalDuration + timer.currentSessionDuration) / 1000);
+    const totalSeconds = Math.floor(timer.totalDuration / 1000);
     const estimatedSeconds = timer.estimatedHours * 3600;
     const remainingSeconds = estimatedSeconds - totalSeconds;
 
