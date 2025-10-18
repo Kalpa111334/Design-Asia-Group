@@ -289,6 +289,32 @@ export class PWAManager {
       });
     }
   }
+
+  public async initializePushNotifications(): Promise<boolean> {
+    if (!this.isSupported) {
+      console.warn('Push notifications are not supported in this browser');
+      return false;
+    }
+
+    try {
+      // Request notification permission
+      const permission = await this.requestNotificationPermission();
+      if (permission !== 'granted') {
+        console.warn('Notification permission denied');
+        return false;
+      }
+
+      // Initialize push notification service
+      const { pushNotificationService } = await import('./pushNotifications');
+      await pushNotificationService.subscribeToPush();
+      
+      console.log('Push notifications initialized successfully');
+      return true;
+    } catch (error) {
+      console.error('Failed to initialize push notifications:', error);
+      return false;
+    }
+  }
 }
 
 // Export singleton instance

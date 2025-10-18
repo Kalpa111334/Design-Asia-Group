@@ -121,5 +121,21 @@
   },
   "launch_handler": {
     "client_mode": "navigate-existing"
-  }
+  },
+  "notification_options": {
+    "action": [
+      {
+        "action": "view",
+        "title": "View Details"
+      },
+      {
+        "action": "dismiss",
+        "title": "Dismiss"
+      }
+    ]
+  },
+  "permissions": [
+    "notifications"
+  ],
+  "gcm_sender_id": "103953800507"
 }

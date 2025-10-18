@@ -157,31 +157,75 @@ self.addEventListener('sync', (event) => {
 self.addEventListener('push', (event) => {
   console.log('Service Worker: Push notification received');
   
-  const options = {
-    body: event.data ? event.data.text() : 'You have a new notification',
+  let notificationData = {
+    title: 'TaskVision',
+    body: 'You have a new notification',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-72x72.png',
-    vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
-      primaryKey: 1
-    },
+      primaryKey: 1,
+      url: '/dashboard'
+    }
+  };
+
+  // Parse push data if available
+  if (event.data) {
+    try {
+      const pushData = event.data.json();
+      notificationData = {
+        ...notificationData,
+        ...pushData,
+        data: {
+          ...notificationData.data,
+          ...pushData.data
+        }
+      };
+    } catch (e) {
+      // Fallback to text if JSON parsing fails
+      notificationData.body = event.data.text();
+    }
+  }
+
+  // Role-based notification styling
+  const roleColors = {
+    admin: '#dc2626',      // red
+    manager: '#ea580c',    // orange
+    supervisor: '#d97706', // amber
+    employee: '#16a34a'    // green
+  };
+
+  const role = notificationData.data?.role || 'employee';
+  const themeColor = roleColors[role] || roleColors.employee;
+
+  const options = {
+    body: notificationData.body,
+    icon: notificationData.icon || '/icons/icon-192x192.png',
+    badge: notificationData.badge || '/icons/icon-72x72.png',
+    image: notificationData.image,
+    vibrate: [100, 50, 100],
+    data: notificationData.data,
+    tag: notificationData.data?.notificationId || 'default',
+    renotify: true,
+    requireInteraction: notificationData.data?.requireInteraction || false,
+    silent: notificationData.data?.silent || false,
+    timestamp: Date.now(),
     actions: [
       {
-        action: 'explore',
+        action: 'view',
         title: 'View Details',
         icon: '/icons/action-view.png'
       },
       {
-        action: 'close',
-        title: 'Close',
+        action: 'dismiss',
+        title: 'Dismiss',
         icon: '/icons/action-close.png'
       }
     ]
   };
 
   event.waitUntil(
-    self.registration.showNotification('TaskVision', options)
+    self.registration.showNotification(notificationData.title, options)
   );
 });
 
@@ -191,17 +235,41 @@ self.addEventListener('notificationclick', (event) => {
   
   event.notification.close();
 
-  if (event.action === 'explore') {
+  const notificationData = event.notification.data;
+  const targetUrl = notificationData?.url || '/dashboard';
+
+  if (event.action === 'view') {
     event.waitUntil(
-      clients.openWindow('/dashboard')
+      clients.matchAll({ type: 'window' }).then((clientList) => {
+        // Check if app is already open
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            client.focus();
+            client.navigate(targetUrl);
+            return;
+          }
+        }
+        // Open new window if app is not open
+        return clients.openWindow(targetUrl);
+      })
     );
-  } else if (event.action === 'close') {
+  } else if (event.action === 'dismiss') {
     // Just close the notification
     return;
   } else {
     // Default action - open the app
     event.waitUntil(
-      clients.openWindow('/')
+      clients.matchAll({ type: 'window' }).then((clientList) => {
+        // Check if app is already open
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            client.focus();
+            return;
+          }
+        }
+        // Open new window if app is not open
+        return clients.openWindow(targetUrl);
+      })
     );
   }
 });

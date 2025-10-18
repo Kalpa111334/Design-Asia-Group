@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { pushNotificationService, PushNotificationData } from '@/utils/pushNotifications';
 
 export interface Notification {
   id: string;
@@ -22,6 +23,20 @@ interface NotificationContextType {
   addNotification: (notification: Omit<Notification, 'id' | 'created_at' | 'read'>) => void;
   clearNotification: (id: string) => void;
   clearAllNotifications: () => void;
+  // Push notification methods
+  requestNotificationPermission: () => Promise<NotificationPermission>;
+  subscribeToPush: () => Promise<boolean>;
+  unsubscribeFromPush: () => Promise<boolean>;
+  isPushSupported: boolean;
+  isPushSubscribed: boolean;
+  // Role-based notification methods
+  sendAdminNotification: (data: Omit<PushNotificationData, 'data'> & { data?: any }) => Promise<void>;
+  sendManagerNotification: (data: Omit<PushNotificationData, 'data'> & { data?: any }) => Promise<void>;
+  sendSupervisorNotification: (data: Omit<PushNotificationData, 'data'> & { data?: any }) => Promise<void>;
+  sendEmployeeNotification: (data: Omit<PushNotificationData, 'data'> & { data?: any }) => Promise<void>;
+  sendToRole: (role: 'admin' | 'manager' | 'supervisor' | 'employee', notification: PushNotificationData) => Promise<void>;
+  sendToUser: (userId: string, notification: PushNotificationData) => Promise<void>;
+  sendSystemNotification: (notification: PushNotificationData) => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -29,12 +44,14 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isPushSubscribed, setIsPushSubscribed] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
       fetchNotifications();
       setupRealtimeSubscription();
+      checkPushSubscription();
     }
   }, [user]);
 
@@ -200,6 +217,62 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Push notification methods
+  const checkPushSubscription = async () => {
+    const subscribed = await pushNotificationService.checkSubscription();
+    setIsPushSubscribed(subscribed);
+  };
+
+  const requestNotificationPermission = async (): Promise<NotificationPermission> => {
+    const permission = await pushNotificationService.requestPermission();
+    if (permission === 'granted') {
+      await checkPushSubscription();
+    }
+    return permission;
+  };
+
+  const subscribeToPush = async (): Promise<boolean> => {
+    const subscription = await pushNotificationService.subscribeToPush();
+    const success = subscription !== null;
+    setIsPushSubscribed(success);
+    return success;
+  };
+
+  const unsubscribeFromPush = async (): Promise<boolean> => {
+    const success = await pushNotificationService.unsubscribeFromPush();
+    setIsPushSubscribed(!success);
+    return success;
+  };
+
+  // Role-based notification methods
+  const sendAdminNotification = async (data: Omit<PushNotificationData, 'data'> & { data?: any }) => {
+    await pushNotificationService.sendAdminNotification(data);
+  };
+
+  const sendManagerNotification = async (data: Omit<PushNotificationData, 'data'> & { data?: any }) => {
+    await pushNotificationService.sendManagerNotification(data);
+  };
+
+  const sendSupervisorNotification = async (data: Omit<PushNotificationData, 'data'> & { data?: any }) => {
+    await pushNotificationService.sendSupervisorNotification(data);
+  };
+
+  const sendEmployeeNotification = async (data: Omit<PushNotificationData, 'data'> & { data?: any }) => {
+    await pushNotificationService.sendEmployeeNotification(data);
+  };
+
+  const sendToRole = async (role: 'admin' | 'manager' | 'supervisor' | 'employee', notification: PushNotificationData) => {
+    await pushNotificationService.sendToRole(role, notification);
+  };
+
+  const sendToUser = async (userId: string, notification: PushNotificationData) => {
+    await pushNotificationService.sendToUser(userId, notification);
+  };
+
+  const sendSystemNotification = async (notification: PushNotificationData) => {
+    await pushNotificationService.sendSystemNotification(notification);
+  };
+
   return (
     <NotificationContext.Provider
       value={{
@@ -210,6 +283,20 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
         addNotification,
         clearNotification,
         clearAllNotifications,
+        // Push notification methods
+        requestNotificationPermission,
+        subscribeToPush,
+        unsubscribeFromPush,
+        isPushSupported: pushNotificationService.isSupported,
+        isPushSubscribed,
+        // Role-based notification methods
+        sendAdminNotification,
+        sendManagerNotification,
+        sendSupervisorNotification,
+        sendEmployeeNotification,
+        sendToRole,
+        sendToUser,
+        sendSystemNotification,
       }}
     >
       {children}

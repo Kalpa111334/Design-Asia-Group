@@ -17,6 +17,7 @@ import {
   BarChart3 as BarChartIcon,
   FileText,
   Settings,
+  Bell,
 } from 'lucide-react';
 import {
   Sheet,
@@ -59,7 +60,8 @@ const Layout = ({ children }: LayoutProps) => {
       { path: '/geofences', icon: Shield, label: 'Geofences', resource: 'geofences' as const },
       { path: '/users', icon: Users, label: 'Users', resource: 'users' as const },
       { path: '/reports', icon: BarChartIcon, label: 'Reports', resource: 'reports' as const },
-      { path: '/permissions', icon: Settings, label: 'Permissions', resource: 'permissions' as const }
+      { path: '/permissions', icon: Settings, label: 'Permissions', resource: 'permissions' as const },
+      { path: '/notifications', icon: Bell, label: 'Notifications', resource: 'notifications' as const }
     ];
 
     // Filter items based on user permissions

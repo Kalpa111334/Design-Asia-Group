@@ -31,14 +31,24 @@ const Jobs = lazy(() => import("./pages/Jobs"));
 const PermissionManagement = lazy(() => import("./pages/PermissionManagement"));
 const Meet = lazy(() => import("./pages/Meet"));
 const EmployeeTracking = lazy(() => import("./pages/EmployeeTracking"));
+const NotificationCenter = lazy(() => import("./pages/NotificationCenter"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
-    // Initialize PWA manager
-    pwaManager.requestNotificationPermission();
+    // Initialize PWA manager and push notifications
+    const initializePWA = async () => {
+      try {
+        await pwaManager.requestNotificationPermission();
+        await pwaManager.initializePushNotifications();
+      } catch (error) {
+        console.error('Failed to initialize PWA features:', error);
+      }
+    };
+    
+    initializePWA();
   }, []);
 
   return (
@@ -72,6 +82,7 @@ const App = () => {
                   <Route path="/permissions" element={<PermissionManagement />} />
                   <Route path="/meet" element={<Meet />} />
                   <Route path="/tracking" element={<EmployeeTracking />} />
+                  <Route path="/notifications" element={<NotificationCenter />} />
                   {/* Catch-all route for 404 handling */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
