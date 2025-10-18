@@ -24,7 +24,8 @@ import Layout from '@/components/Layout';
 import Alert from '@/utils/alert';
 import NoAccess from '@/components/NoAccess';
 import CameraCapture from '@/components/CameraCapture';
-import { downloadTasksInvoicePng, downloadTasksInvoicePngPortrait } from '@/utils/pngInvoice';
+import { downloadTasksInvoiceSvg } from '@/utils/svgInvoice';
+import { downloadTasksInvoicePngPortrait, downloadTasksInvoicePngLandscape } from '@/utils/pngInvoice';
 
 interface Profile {
   id: string;
@@ -865,7 +866,7 @@ const Tasks = () => {
                                 downloadTasksInvoicePngPortrait(`weekly_tasks_portrait_${new Date().toISOString().slice(0,10)}`, rows, { 
                                   title: 'Weekly Tasks Invoice',
                                   quality: 0.95,
-                                  scale: 2 // High DPI for crisp images
+                                  scale: 2
                                 });
                               }}>Export Invoice (Portrait PNG)</Button>
                               
@@ -883,10 +884,10 @@ const Tasks = () => {
                                     due_date: t.due_date ? new Date(t.due_date).toLocaleString() : '',
                                     completed_at: (t as any).completed_at ? new Date((t as any).completed_at).toLocaleString() : '',
                                   }));
-                                downloadTasksInvoicePng(`weekly_tasks_landscape_${new Date().toISOString().slice(0,10)}`, rows, { 
+                                downloadTasksInvoicePngLandscape(`weekly_tasks_landscape_${new Date().toISOString().slice(0,10)}`, rows, { 
                                   title: 'Weekly Tasks Invoice',
                                   quality: 0.95,
-                                  scale: 2 // High DPI for crisp images
+                                  scale: 2
                                 });
                               }}>Export Invoice (Landscape PNG)</Button>
                             </div>
