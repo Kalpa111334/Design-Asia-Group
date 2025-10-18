@@ -24,7 +24,7 @@ import Layout from '@/components/Layout';
 import Alert from '@/utils/alert';
 import NoAccess from '@/components/NoAccess';
 import CameraCapture from '@/components/CameraCapture';
-import { downloadTasksInvoiceSvg } from '@/utils/svgInvoice';
+import { downloadTasksInvoicePng, downloadTasksInvoicePngPortrait } from '@/utils/pngInvoice';
 
 interface Profile {
   id: string;
@@ -847,22 +847,49 @@ const Tasks = () => {
                           <span>Overall Completion</span>
                           <div className="flex items-center gap-2">
                             <span className="text-muted-foreground">{pct}%</span>
-                            <Button size="sm" variant="outline" onClick={() => {
-                              const weekAgo = new Date();
-                              weekAgo.setDate(weekAgo.getDate() - 7);
-                              const rows = tasks
-                                .filter(t => new Date(t.created_at) >= weekAgo)
-                                .map(t => ({
-                                  id: t.id,
-                                  title: t.title,
-                                  status: t.status,
-                                  priority: t.priority,
-                                  created_at: new Date(t.created_at).toLocaleString(),
-                                  due_date: t.due_date ? new Date(t.due_date).toLocaleString() : '',
-                                  completed_at: (t as any).completed_at ? new Date((t as any).completed_at).toLocaleString() : '',
-                                }));
-                              downloadTasksInvoiceSvg(`weekly_tasks_${new Date().toISOString().slice(0,10)}`, rows, { title: 'Weekly Tasks Invoice' });
-                            }}>Export weekly Invoice (SVG)</Button>
+                            <div className="flex gap-2">
+                              <Button size="sm" variant="outline" onClick={() => {
+                                const weekAgo = new Date();
+                                weekAgo.setDate(weekAgo.getDate() - 7);
+                                const rows = tasks
+                                  .filter(t => new Date(t.created_at) >= weekAgo)
+                                  .map(t => ({
+                                    id: t.id,
+                                    title: t.title,
+                                    status: t.status,
+                                    priority: t.priority,
+                                    created_at: new Date(t.created_at).toLocaleString(),
+                                    due_date: t.due_date ? new Date(t.due_date).toLocaleString() : '',
+                                    completed_at: (t as any).completed_at ? new Date((t as any).completed_at).toLocaleString() : '',
+                                  }));
+                                downloadTasksInvoicePngPortrait(`weekly_tasks_portrait_${new Date().toISOString().slice(0,10)}`, rows, { 
+                                  title: 'Weekly Tasks Invoice',
+                                  quality: 0.95,
+                                  scale: 2 // High DPI for crisp images
+                                });
+                              }}>Export Invoice (Portrait PNG)</Button>
+                              
+                              <Button size="sm" variant="outline" onClick={() => {
+                                const weekAgo = new Date();
+                                weekAgo.setDate(weekAgo.getDate() - 7);
+                                const rows = tasks
+                                  .filter(t => new Date(t.created_at) >= weekAgo)
+                                  .map(t => ({
+                                    id: t.id,
+                                    title: t.title,
+                                    status: t.status,
+                                    priority: t.priority,
+                                    created_at: new Date(t.created_at).toLocaleString(),
+                                    due_date: t.due_date ? new Date(t.due_date).toLocaleString() : '',
+                                    completed_at: (t as any).completed_at ? new Date((t as any).completed_at).toLocaleString() : '',
+                                  }));
+                                downloadTasksInvoicePng(`weekly_tasks_landscape_${new Date().toISOString().slice(0,10)}`, rows, { 
+                                  title: 'Weekly Tasks Invoice',
+                                  quality: 0.95,
+                                  scale: 2 // High DPI for crisp images
+                                });
+                              }}>Export Invoice (Landscape PNG)</Button>
+                            </div>
                           </div>
                         </div>
                         <Progress value={pct} />
