@@ -49,6 +49,7 @@ interface Task {
   rejection_reason: string | null;
   estimated_hours?: number | null;
   spent_seconds?: number | null;
+  task_identification_code?: string | null;
   task_assignees?: Array<{
     profiles: Profile;
   }>;
@@ -85,6 +86,7 @@ const Tasks = () => {
     requires_proof: boolean;
     assignee_ids: string[];
     job_id?: string | null;
+    task_identification_code: string;
   }>({
     title: '',
     description: '',
@@ -94,6 +96,7 @@ const Tasks = () => {
     requires_proof: false,
     assignee_ids: [],
     job_id: null,
+    task_identification_code: '',
   });
 
   const [attachedFiles, setAttachedFiles] = useState<Array<{
@@ -255,9 +258,10 @@ const Tasks = () => {
             due_date: formData.due_date || null,
             location_required: formData.location_required,
             requires_proof: formData.requires_proof,
-          created_by: user?.id,
-          status: 'pending',
+            created_by: user?.id,
+            status: 'pending',
             job_id: formData.job_id || null,
+            task_identification_code: formData.task_identification_code || null,
           },
         ])
         .select()
@@ -576,6 +580,18 @@ const Tasks = () => {
                     />
                   </div>
                   <div className="space-y-2">
+                    <Label htmlFor="task_identification_code">Task Identification Code</Label>
+                    <Input
+                      id="task_identification_code"
+                      placeholder="Enter task identification code (e.g., TASK-001, PROJ-2024-001)"
+                      value={formData.task_identification_code}
+                      onChange={(e) => setFormData({ ...formData, task_identification_code: e.target.value })}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Optional: Enter a custom identification code for easier task tracking. If left empty, a code will be auto-generated.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
                     <Label htmlFor="description">Description</Label>
                     <Textarea
                       id="description"
@@ -882,6 +898,11 @@ const Tasks = () => {
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                       <CardTitle>{task.title}</CardTitle>
+                        {task.task_identification_code && (
+                          <Badge variant="secondary" className="text-xs font-mono">
+                            {task.task_identification_code}
+                          </Badge>
+                        )}
                         {task.location_required && (
                           <Badge variant="outline" className="text-xs">
                             <MapPin className="w-3 h-3 mr-1" />
@@ -1008,6 +1029,14 @@ const Tasks = () => {
                 <div>
                   <h3 className="font-semibold text-lg">{selectedTask.title}</h3>
                   <p className="text-muted-foreground mt-1">{selectedTask.description}</p>
+                  {selectedTask.task_identification_code && (
+                    <div className="mt-2">
+                      <Label className="text-muted-foreground">Task ID</Label>
+                      <p className="mt-1 font-mono text-sm bg-muted px-2 py-1 rounded inline-block">
+                        {selectedTask.task_identification_code}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
