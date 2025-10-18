@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
 import { PermissionProvider } from "./contexts/PermissionContext";
+import { TimerProvider } from "./contexts/TimerContext";
 import { pwaManager } from "./utils/pwa";
 import { useEffect, Suspense, lazy } from "react";
 import RootRedirect from "./pages/Root";
@@ -61,7 +62,8 @@ const App = () => {
           <AuthProvider>
             <PermissionProvider>
               <NotificationProvider>
-                <Suspense fallback={<div className="min-h-screen flex items-center justify-center p-6 text-muted-foreground">Loading...</div>}>
+                <TimerProvider>
+                  <Suspense fallback={<div className="min-h-screen flex items-center justify-center p-6 text-muted-foreground">Loading...</div>}>
                 <Routes>
                   <Route path="/" element={<RootRedirect />} />
                   <Route path="/auth" element={<Auth />} />
@@ -87,6 +89,7 @@ const App = () => {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </Suspense>
+                </TimerProvider>
               </NotificationProvider>
             </PermissionProvider>
           </AuthProvider>

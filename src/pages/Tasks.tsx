@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useTimer } from '@/contexts/TimerContext';
+import { TaskTimer } from '@/components/TaskTimer';
 import { Plus, CheckCircle, Clock, AlertCircle, CheckSquare, Users, Filter, Eye, Edit, Trash2, MapPin, FileCheck, File, X, Camera } from 'lucide-react';
 import FileUpload from '@/components/FileUpload';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -76,6 +78,7 @@ const Tasks = () => {
   const { user, isAdmin } = useAuth();
   const { hasAccess, canEdit, checkAccessAndNavigate } = usePermissions();
   const { toast } = useToast();
+  const { isTimerRunning, isTimerPaused, getFormattedTime } = useTimer();
 
   const [formData, setFormData] = useState<{
     title: string;
@@ -137,6 +140,33 @@ const Tasks = () => {
       setFormData((prev) => ({ ...prev, job_id: jid }));
     }
   }, [checkAccessAndNavigate]);
+
+  // Real-time updates for task time entries
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('task_time_entries')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'task_time_entries',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log('Time entry change:', payload);
+          // Refresh tasks to get updated time data
+          fetchTasks();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   const fetchEmployees = async () => {
     try {
@@ -948,28 +978,23 @@ const Tasks = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {/* Start Task Button - Only show if task is pending */}
-                    {canEdit('tasks') && task.status === 'pending' && (
-                      <Button size="sm" variant="outline" onClick={() => handleUpdateStatus(task.id, 'in_progress')}>
-                        <Clock className="w-4 h-4 mr-2" />
-                        Start
-                      </Button>
-                    )}
+                    {/* Task Timer */}
+                    <TaskTimer
+                      taskId={task.id}
+                      estimatedHours={task.estimated_hours}
+                      spentSeconds={task.spent_seconds}
+                      status={task.status}
+                      canEdit={canEdit('tasks')}
+                      onStatusChange={(newStatus) => handleUpdateStatus(task.id, newStatus as any)}
+                      compact={true}
+                    />
 
-                    {/* Complete Task Button - Only show if task is in_progress */}
-                    {canEdit('tasks') && task.status === 'in_progress' && (
+                    {/* Complete Task Button - Only show if task is in_progress and timer is not running */}
+                    {canEdit('tasks') && task.status === 'in_progress' && !isTimerRunning(task.id) && (
                       <Button size="sm" onClick={() => handleCompleteTask(task.id)}>
                         <Camera className="w-4 h-4 mr-2" />
                         Complete
                       </Button>
-                    )}
-
-                    {/* Time tracking quick totals */}
-                    {typeof task.spent_seconds === 'number' && (
-                      <Badge variant="outline" className="text-xs">
-                        Time: {(task.spent_seconds / 3600).toFixed(1)}h
-                        {typeof task.estimated_hours === 'number' && ` / ${task.estimated_hours}h`}
-                      </Badge>
                     )}
 
                     {/* Admin Approval Buttons - Only show for pending_approval tasks */}
@@ -1038,6 +1063,21 @@ const Tasks = () => {
                     </div>
                   )}
                 </div>
+                
+                {/* Task Timer */}
+                <TaskTimer
+                  taskId={selectedTask.id}
+                  estimatedHours={selectedTask.estimated_hours}
+                  spentSeconds={selectedTask.spent_seconds}
+                  status={selectedTask.status}
+                  canEdit={canEdit('tasks')}
+                  onStatusChange={(newStatus) => {
+                    handleUpdateStatus(selectedTask.id, newStatus as any);
+                    setSelectedTask({ ...selectedTask, status: newStatus });
+                  }}
+                  compact={false}
+                />
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-muted-foreground">Status</Label>
